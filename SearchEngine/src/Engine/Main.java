@@ -12,6 +12,7 @@ import java.util.*;
 
 
 public class Main {
+    
     protected static Queue<WebPage> IndexerQueue = new LinkedList<>();
     protected static Queue<WebPage> ParserQueue = new LinkedList<>();
     static boolean crawlerEnd = false;

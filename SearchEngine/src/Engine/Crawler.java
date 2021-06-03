@@ -1,17 +1,34 @@
 package Engine;
 
 import java.io.IOException;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.net.MalformedURLException;
 import java.util.*;
 
 public class Crawler {
 
     Crawler() {
-
     }
 
-    private static final int MAX_PAGES_TO_SEARCH = 1000;
+    private static final int MAX_PAGES_TO_SEARCH = 5000;
     public Set<String> PagesVisited = new HashSet<String>();
     public List<String> PagesToVisit = new LinkedList<String>(); //depth first approach
+
+    public void PopulatePagesToVisit(String FileName) {
+        BufferedReader reader;
+        try {
+            reader = new BufferedReader(new FileReader(FileName));
+            String line = reader.readLine();
+            while (line != null) {
+                line = reader.readLine();
+                this.PagesToVisit.add(line);
+            }
+            reader.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
 
     public String NextUrl() {
@@ -27,6 +44,8 @@ public class Crawler {
     public void Search(String URL, String KeyWord) throws IOException {
 
         while (this.PagesVisited.size() < MAX_PAGES_TO_SEARCH) {
+            System.out.println("size of pages visited" + this.PagesVisited.size());
+            System.out.println("size of pages to visit" + this.PagesToVisit.size());
             String CurrentURL;
             SpiderLeg Leg = new SpiderLeg();
 
@@ -36,24 +55,35 @@ public class Crawler {
 
             } else {
                 CurrentURL = this.NextUrl();
+                System.out.println(CurrentURL);
             }
 
-            Leg.Crawl(CurrentURL);
+            RobotManager RB = new RobotManager();
+            boolean isRobotSafe = RB.RobotSafe(CurrentURL);
+
+            if (isRobotSafe && !CurrentURL.isEmpty())
+                Leg.Crawl(CurrentURL);
 
             boolean WordFound = Leg.searchForWord(KeyWord);
-            if(WordFound)
+            if (WordFound) {
+            }
 
 
-            this.PagesVisited.addAll(Leg.GetLinks());
+            this.PagesToVisit.addAll(Leg.GetLinks());
         }
     }
 
 
-   /* public static void main(String[] args) {
+    public static void main(String[] args) throws IOException, MalformedURLException {
         Crawler c = new Crawler();
-        c.PagesToVisit.add("www.google.com");
+        c.PopulatePagesToVisit("seeds.txt");
+        c.Search("https://www.yahoo.com", "hello");
+        /*Iterator it = c.PagesVisited.iterator();
 
-        String URL = c.NextUrl();
-    }*/
+        while (it.hasNext()) {
+            System.out.println(it.next());
+        }*/
+
+    }
 
 }
