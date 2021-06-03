@@ -13,6 +13,8 @@ import java.util.*;
 public class Indexer implements Runnable{
     final private static float spamPercentage = (float) 0.4;
     WebPage webPage;
+    public static final String DEFAULT_PAGE_TITLE = "default title";
+
     public Indexer(WebPage webPage) {
         this.webPage = webPage;
     }
@@ -89,7 +91,18 @@ public class Indexer implements Runnable{
     @Override
     public void run() {
 
+        String title = webPage.document.title();
+        if (title.isEmpty())
+            webPage.Title = DEFAULT_PAGE_TITLE;
+        else
+            webPage.Title = Utilities.processString(title);
+
         traverseDOM(webPage.document.body(), "");
+        System.out.println(webPage.Title + "  "+ webPage.url +"\n");
+
+        //Main.databaseManager.addDocument(webPage);
+        //Main.databaseManager.addKeywordsInDoc(webPage);
+
         /*for (Map.Entry<String, FieldData> entry : webPage.wordsMap.entrySet()) {
             System.out.println(entry.getKey() + ":" + entry.getValue().count.toString() +"    "+ entry.getValue().score.toString());
         }
@@ -121,9 +134,8 @@ public class Indexer implements Runnable{
         //For testing only
         ////////////////////////////////////////////
         // new file object
-        //Main.databaseManager.addDocument(webPage);
-        //Main.databaseManager.addKeywordsInDoc(webPage);
-        /*LinkedHashMap<String, FieldData> sortedMap = new LinkedHashMap<>();
+        /*
+        LinkedHashMap<String, FieldData> sortedMap = new LinkedHashMap<>();
 
         webPage.wordsMap.entrySet()
                 .stream()

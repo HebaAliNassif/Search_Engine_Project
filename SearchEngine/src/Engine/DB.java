@@ -48,7 +48,10 @@ public class DB {
     public void addDocument(WebPage webPage)  {
         String singleString = (webPage.rawWebPage.toString()).replaceAll("\""," ").replaceAll("'", " ");
 
-            String sql = "INSERT INTO DocumentsTable VALUES ('" + webPage.url + "','" + singleString + "' ,'" + webPage.wordsCount + "')";
+            String sql = "INSERT INTO DocumentsTable VALUES ('" + webPage.url
+                                                                + "','" + singleString + "' ,'"
+                                                                + webPage.wordsCount + "','"
+                                                                + webPage.Title + "')";
             try {
                 stmt.executeUpdate(sql);
             } catch (SQLException throwables) {

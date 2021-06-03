@@ -30,7 +30,7 @@ public class Main {
 
         //////////////////////////////////////////////
         //Only for testing the indexer
-        Scanner scanner = new Scanner(new File("links.txt"));
+        /*Scanner scanner = new Scanner(new File("links.txt"));
         List<String> links = new ArrayList<String>();
         String token1 = "";
         while (scanner.hasNext()) {
@@ -47,8 +47,12 @@ public class Main {
             WebPage webPage = new WebPage(url, doc);
             ParserQueue.add(webPage);
         }
-        crawlerEnd = true;
+        crawlerEnd = true;*/
         //////////////////////////////////////////////
+        Crawler c = new Crawler();
+        c.PopulatePagesToVisit("seeds.txt");
+        c.Search(Crawler.PagesToVisit.get(0));
+
         databaseManager = new DB();
         webPageParseManager.start();
         indexerManager.start();
