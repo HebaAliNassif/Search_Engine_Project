@@ -41,7 +41,7 @@ public class Crawler {
         return NextUrl;
     }
 
-    public void Search(String URL, String KeyWord) throws IOException {
+    public void Search(String URL) throws IOException {
 
         while (this.PagesVisited.size() < MAX_PAGES_TO_SEARCH) {
             System.out.println("size of pages visited" + this.PagesVisited.size());
@@ -58,15 +58,13 @@ public class Crawler {
                 System.out.println(CurrentURL);
             }
 
+
+
             RobotManager RB = new RobotManager();
             boolean isRobotSafe = RB.RobotSafe(CurrentURL);
 
-            if (isRobotSafe && !CurrentURL.isEmpty())
+            if (isRobotSafe && !(CurrentURL ==null))
                 Leg.Crawl(CurrentURL);
-
-            boolean WordFound = Leg.searchForWord(KeyWord);
-            if (WordFound) {
-            }
 
 
             this.PagesToVisit.addAll(Leg.GetLinks());
@@ -77,7 +75,7 @@ public class Crawler {
     public static void main(String[] args) throws IOException, MalformedURLException {
         Crawler c = new Crawler();
         c.PopulatePagesToVisit("seeds.txt");
-        c.Search("https://www.yahoo.com", "hello");
+        c.Search("https://www.yahoo.com");
         /*Iterator it = c.PagesVisited.iterator();
 
         while (it.hasNext()) {

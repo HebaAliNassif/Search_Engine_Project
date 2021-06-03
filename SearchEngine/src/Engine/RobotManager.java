@@ -4,6 +4,7 @@ package Engine;
 import crawlercommons.robots.*;
 
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import java.io.InputStreamReader;
@@ -25,7 +26,12 @@ public class RobotManager {
     private static final String USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:88.0) Gecko/20100101 Firefox/88.0";
 
     public URL GetUrlRobotstxt(String URL) throws IOException {
-        String url_temp = URL + "/robots.txt";
+        String url_temp = new String();
+        if(URL.endsWith("/")) {
+            url_temp = URL + "robots.txt";
+        } else {
+            url_temp = URL + "/robots.txt";
+        }
         return (new URL(url_temp));
     }
 
@@ -41,35 +47,39 @@ public class RobotManager {
             if (!protocol.equals("http") && !protocol.equals("https")) {
                 return false;
             }
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
-        RobotURL = GetUrlRobotstxt(URL);
+            RobotURL = GetUrlRobotstxt(URL);
+       /* } catch (MalformedURLException e) {
+            System.out.println(" Invalid Robot URL ");
+        }*/
 
-        if (!Allowed.containsKey(RobotURL.getProtocol() + "://" + RobotURL.getHost()) && !Disallowed.containsKey(RobotURL.getProtocol() + "://" + RobotURL.getHost())) {
 
-            if (GetRules(RobotURL)) {
-                return true;
-            }
-        }
+            if (!Allowed.containsKey(RobotURL.getProtocol() + "://" + RobotURL.getHost()) && !Disallowed.containsKey(RobotURL.getProtocol() + "://" + RobotURL.getHost())) {
 
-        String file = UrlToCheck.getFile(); // gets the directory we are searching for
-        try {
-            for (String s : Allowed.get(RobotURL.getProtocol() + "://" + RobotURL.getHost())) {
-                if ((file.compareToIgnoreCase(s) == 0)) {
-                    System.out.println(" due to " + s + "  your URL is allowed !!");
+                if (GetRules(RobotURL)) {
                     return true;
                 }
             }
 
-            for (String s : Disallowed.get(RobotURL.getProtocol() + "://" + RobotURL.getHost())) {
-                if (file.startsWith(s)) {
-                    System.out.println(" due to " + s + "  your URL is disallowed !!");
-                    return false;
+            String file = UrlToCheck.getFile(); // gets the directory we are searching for
+            try {
+                for (String s : Allowed.get(RobotURL.getProtocol() + "://" + RobotURL.getHost())) {
+                    if ((file.compareToIgnoreCase(s) == 0)) {
+                        System.out.println(" due to " + s + "  your URL is allowed !!");
+                        return true;
+                    }
                 }
+
+                for (String s : Disallowed.get(RobotURL.getProtocol() + "://" + RobotURL.getHost())) {
+                    if (file.startsWith(s)) {
+                        System.out.println(" due to " + s + "  your URL is disallowed !!");
+                        return false;
+                    }
+                }
+            } catch (NullPointerException ex) {
+                return false;
             }
-        } catch (NullPointerException ex) {
-            return false;
+        } catch (MalformedURLException e) {
+            System.out.println(" Invalid Robot URL ");
         }
 
 
@@ -89,6 +99,8 @@ public class RobotManager {
             return false;
         }
 
+        try {
+
         BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
         String RobotTxt = new String();
 
@@ -103,7 +115,7 @@ public class RobotManager {
         while ((RobotTxt = reader.readLine()) != null) {
             if (!RobotTxt.startsWith("Disallow:") && !RobotTxt.startsWith("Allow:"))
                 break;
-
+        try {
             String[] splited = RobotTxt.split(" ");
 
             if (splited[0].equals("Disallow:")) {
@@ -111,14 +123,21 @@ public class RobotManager {
             } else if (splited[0].equals("Allow:")) {
                 allowed.add(splited[1]);
             }
+        } catch(ArrayIndexOutOfBoundsException e) {
+            System.out.println(" error in robots file line , resuming... ");
+        }
 
         }
+
         //System.out.println(RobotURL.getProtocol() + "://" + RobotURL.getHost());
         reader.close();
         Allowed.put(RobotURL.getProtocol() + "://" + RobotURL.getHost(), allowed);
         Disallowed.put(RobotURL.getProtocol() + "://" + RobotURL.getHost(), disallowed);
         allowed = null;
         disallowed = null;
+        } catch(FileNotFoundException e) {
+            System.out.println(" File Not found , resuming... ");
+        }
         return true;
     }
 
