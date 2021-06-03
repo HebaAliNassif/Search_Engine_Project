@@ -51,7 +51,10 @@ public class DB {
             String sql = "INSERT INTO DocumentsTable VALUES ('" + webPage.url
                                                                 + "','" + singleString + "' ,'"
                                                                 + webPage.wordsCount + "','"
-                                                                + webPage.Title + "')";
+                                                                + webPage.Title + "')ON DUPLICATE KEY UPDATE doc_description ='"
+                                                                + singleString +"', word_count='"+webPage.wordsCount
+                                                                + "', title='"+webPage.Title +"'";
+            System.out.println(sql);
             try {
                 stmt.executeUpdate(sql);
             } catch (SQLException throwables) {
@@ -65,7 +68,9 @@ public class DB {
             String sql = "INSERT INTO KeywordsInDocTable VALUES ('" + entry.getKey()
                                                         + "','" + webPage.url + "' ,'"
                                                         + entry.getValue().count + "' ,'"
-                                                        + entry.getValue().score + "')";
+                                                        + entry.getValue().score + "') ON DUPLICATE KEY UPDATE term_freq ='"
+                                                        + entry.getValue().count + "', score='"+ entry.getValue().score+ "'";
+            System.out.println(sql);
             try {
                 stmt.executeUpdate(sql);
             } catch (SQLException throwables) {
@@ -98,7 +103,7 @@ public class DB {
                 int idf = (int)doc_count/count;
 
                 sql = "INSERT INTO Keywords VALUES ('" + str + "' ,'"
-                        + idf + "')";
+                        + idf + "') ON DUPLICATE KEY UPDATE idf='"+idf + "'";
                 stmt3.executeUpdate(sql);
 
             }
@@ -142,4 +147,6 @@ public class DB {
         }
         return Result;
     }
+
+
 }

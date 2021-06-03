@@ -62,6 +62,9 @@ public class Main {
 
         webPageParseManager.join();
         indexerManager.join();
+
+        //databaseManager.countKeyword();
+
         databaseManager.closeConnection();
     }
 }
