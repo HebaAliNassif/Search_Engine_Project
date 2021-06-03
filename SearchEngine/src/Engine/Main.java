@@ -17,7 +17,7 @@ public class Main {
     static boolean crawlerEnd = false;
     static boolean webPageParserEnd = false;
     static boolean indexerEnd = false;
-
+    static public DB databaseManager;
     public static void main(String[] args) throws IOException, URISyntaxException, InterruptedException {
         System.out.println("Hello from Main");
 
@@ -48,11 +48,15 @@ public class Main {
         }
         crawlerEnd = true;
         //////////////////////////////////////////////
-
+        databaseManager = new DB();
         webPageParseManager.start();
         indexerManager.start();
 
+        QueryProcessor Q = new QueryProcessor();
+        Q.Process("Troy Egypt");
+
         webPageParseManager.join();
         indexerManager.join();
+        databaseManager.closeConnection();
     }
 }

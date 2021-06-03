@@ -3,19 +3,12 @@ package Engine;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Node;
 import org.jsoup.nodes.TextNode;
+import org.tartarus.snowball.SnowballStemmer;
+import org.tartarus.snowball.ext.englishStemmer;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
-
-class FieldData {
-    public Integer TermFrequency;
-}
+import java.io.*;
+import java.sql.SQLException;
+import java.util.*;
 
 public class Indexer implements Runnable{
     final private static float spamPercentage = (float) 0.4;
@@ -33,7 +26,7 @@ public class Indexer implements Runnable{
             FieldData currWordTermFrequency = map.get(word);
             if (currWordTermFrequency == null)
             {
-                currWordTermFrequency = new FieldData();
+                //currWordTermFrequency = new FieldData();
                 currWordTermFrequency.TermFrequency = wordImpotence;
             }
             else {
@@ -44,63 +37,100 @@ public class Indexer implements Runnable{
         }
         return wordCount;
     }
+    void processText(String text, String tag)
+    {
+        String words[] = new String(Utilities.processString(text)).split(" ");
+        int tagScore = Constants.TAG_TO_SCORE_MAP.getOrDefault(tag, 1);
+        for (String word : words) {
 
-    private void recursiveDFS(Node node, String tag) {
+            if (word.isEmpty()) {
+                continue;
+            }
+            if (word.length() <= 2 || Constants.STOP_WORDS.contains(word)) {
+                continue;
+            }
+            int pos = webPage.wordsCount++;
+            List<Integer> positions = new ArrayList<>();
+            positions.add(pos);
+            positions = webPage.wordPosMap.putIfAbsent(word, positions);
+            if (positions != null) {
+                positions.add(pos);
+            }
+            String stem = Utilities.stemWord(word);
+            // Update web page stem map
+            FieldData info = webPage.wordsMap.putIfAbsent(stem, new FieldData(1, tagScore));
+            if (info != null) {
+                info.count++;
+                info.score += tagScore;
+            }
+        }
+
+    }
+
+    private void traverseDOM(Node node, String tag) {
         if (node instanceof TextNode) {
+
             String currentNodeText = ((TextNode) node).text().trim();
-            if (!currentNodeText.isEmpty())
-            {
+            if (!currentNodeText.isEmpty()) {
                 webPage.rawWebPage.append(currentNodeText + " ");
+                processText(currentNodeText, tag);
             }
         }
         if (node instanceof Element) {
-            /*if (!Constants.HTML_TAGS.contains(tag)) {
+            if (!Constants.HTML_TAGS.contains(((Element) node).tagName())) {
                 return;
-            }*/
+            }
             for (Node child : node.childNodes()) {
-                recursiveDFS(child, ((Element) node).tagName());
+                traverseDOM(child, ((Element) node).tagName());
             }
         }
     }
 
     @Override
     public void run() {
-        Map<String, FieldData> map = new HashMap<>();
 
+        traverseDOM(webPage.document.body(), "");
+        /*for (Map.Entry<String, FieldData> entry : webPage.wordsMap.entrySet()) {
+            System.out.println(entry.getKey() + ":" + entry.getValue().count.toString() +"    "+ entry.getValue().score.toString());
+        }
         //Plain Text
-        int wordsCount = CountWordTermFreq(map, webPage.htmlText.Plain, 1);
+        int wordsCount = CountWordTermFreq(webPage.map, webPage.htmlText.Plain, 1);
         //Checking for a spam page (done only on the plain text)
-        for (Object name : map.keySet())
+        for (Object name : webPage.map.keySet())
         {
             //Spam Condition
-            if ((((float) map.get(name).TermFrequency) / (float) wordsCount) >= spamPercentage) {
+            if ((((float) webPage.map.get(name).TermFrequency) / (float) wordsCount) >= spamPercentage) {
                 System.out.println("Spam page with url: " + webPage.url);
                 return;
             }
         }
+        //System.out.println(webPage.document.body());
+
 
         //Bold Text
         //For a bold text, it is already added to the map with an importance value equals 1 at the previous step.
         //Calling the method again will increase the importance of the word to be total of 2 (1 + 1).
-        CountWordTermFreq(map, webPage.htmlText.Bold, 1);
+        CountWordTermFreq(webPage.map, webPage.htmlText.Bold, 1);
 
         //Header Text
-        CountWordTermFreq(map, webPage.htmlText.Headers, 3);
+        CountWordTermFreq(webPage.map, webPage.htmlText.Headers, 3);
 
         //Title Text
-        CountWordTermFreq(map, webPage.htmlText.Title, 4);
-
+        CountWordTermFreq(webPage.map, webPage.htmlText.Title, 4);
+        */
         //For testing only
         ////////////////////////////////////////////
         // new file object
-        LinkedHashMap<String, FieldData> sortedMap = new LinkedHashMap<>();
+        //Main.databaseManager.addDocument(webPage);
+        //Main.databaseManager.addKeywordsInDoc(webPage);
+        /*LinkedHashMap<String, FieldData> sortedMap = new LinkedHashMap<>();
 
-        map.entrySet()
+        webPage.wordsMap.entrySet()
                 .stream()
                 .sorted(Map.Entry.comparingByValue(new Comparator<FieldData>() {
                     @Override
                     public int compare(FieldData o1, FieldData o2) {
-                        return o2.TermFrequency.compareTo(o1.TermFrequency);
+                        return o2.score.compareTo(o1.score);
                     }
                 }))
                 .forEachOrdered(x -> sortedMap.put(x.getKey(), x.getValue()));
@@ -120,7 +150,7 @@ public class Indexer implements Runnable{
 
                 // put key and value separated by a colon
                 bf.write(entry.getKey() + ":"
-                        + entry.getValue().TermFrequency);
+                        + entry.getValue().count +"\t" + entry.getValue().score);
 
                 // new line
                 bf.newLine();
@@ -129,7 +159,7 @@ public class Indexer implements Runnable{
             bf.flush();
         } catch (IOException e) {
             e.printStackTrace();
-        }
+        }*/
         ////////////////////////////////////////////
     }
 }
