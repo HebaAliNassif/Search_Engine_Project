@@ -1,9 +1,9 @@
 package Engine;
 
-import java.io.IOException;
-import java.io.BufferedReader;
-import java.io.FileReader;
+import java.io.*;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URL;
 import java.util.*;
 
 public class Crawler implements Runnable {
@@ -12,29 +12,49 @@ public class Crawler implements Runnable {
     PopulatePagesToVisit("seeds.txt");
     }
 
+
     private static final int MAX_PAGES_TO_SEARCH = 5000;
     public Set<String> PagesVisited = new HashSet<String>();
     public List<String> PagesToVisit = new LinkedList<String>(); //breadth first approach
 
-    public void PopulatePagesToVisit(String FileName) {
-        BufferedReader reader;
+   // public void PopulatePagesToVisit(String FileName) {
+     //   BufferedReader reader;
+
+
+
+    public void PopulatePagesToVisit(String FileName) throws FileNotFoundException {
+        Scanner scanner = new Scanner(new File(FileName));
+        String token1 = "";
+        while (scanner.hasNext()) {
+            // find next line
+            token1 = scanner.next();
+            //System.out.println(token1);
+            PagesToVisit.add(token1);
+        }
+        /*BufferedReader reader;
+
         try {
             reader = new BufferedReader(new FileReader(FileName));
             String line = reader.readLine();
             while (line != null) {
+
                 line = reader.readLine();
                 synchronized (PagesVisited) {
                     this.PagesToVisit.add(line);
                 }
+
+                this.PagesToVisit.add(line);
+                line = reader.readLine();
+
             }
             reader.close();
         } catch (IOException e) {
             e.printStackTrace();
-        }
+        }*/
     }
 
 
-    public String NextUrl() {
+    public String NextUrl() throws MalformedURLException {
         String NextUrl = this.PagesToVisit.remove(0);
 
         while (this.PagesVisited.contains(NextUrl)) {
@@ -42,11 +62,16 @@ public class Crawler implements Runnable {
         }
         this.PagesVisited.add(NextUrl);
 
+
+
+        NextUrl = URI.create((new URL(NextUrl)).toString()).normalize().toString();
+
         return NextUrl;
 
     }
 
     public void Search(String URL) throws IOException {
+
 
         while (true) {
             synchronized (PagesVisited) {
@@ -56,21 +81,28 @@ public class Crawler implements Runnable {
             }
             System.out.println("size of pages visited" + this.PagesVisited.size());
             System.out.println("size of pages to visit" + this.PagesToVisit.size());
+
+
             String CurrentURL;
             SpiderLeg Leg = new SpiderLeg();
             synchronized (PagesToVisit) {
                 if (!this.PagesToVisit.isEmpty()) {
 
-
                         CurrentURL = this.NextUrl();
                         //System.out.println(CurrentURL);
-
 
                         RobotManager RB = new RobotManager();
                         boolean isRobotSafe = RB.RobotSafe(CurrentURL);
 
-                        if (isRobotSafe && !(CurrentURL == null))
-                            Leg.Crawl(CurrentURL);
+
+            if (isRobotSafe && !(CurrentURL ==null))
+            {
+                Leg.Crawl(CurrentURL);
+                WebPage webPage = new WebPage(CurrentURL, Leg.document);
+                synchronized ( Main.ParserQueue) {
+                    Main.ParserQueue.add(webPage);
+                }
+            }
 
 
                         this.PagesToVisit.addAll(Leg.GetLinks());

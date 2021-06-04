@@ -7,6 +7,7 @@ CREATE TABLE DocumentsTable
 	doc_url varchar(500) NOT NULL,
 	doc_description varchar(max) NULL,
 	word_count int NOT NULL,
+	title varchar(500) NOT NULL,
 	PRIMARY KEY (doc_url)
 );
 CREATE TABLE KeywordsInDocTable

@@ -19,7 +19,8 @@ public class SpiderLeg {  // this class will take care of HTTPS requests
 
     private List<String> links = new LinkedList<String>(); // list of links
     public Set<String> CompactStrings = new HashSet<String>();
-    private Document HTML_Document; // web page
+    public Document HTML_Document; // web page
+    public Document document;
     private static final String USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:88.0) Gecko/20100101 Firefox/88.0";
 
     SpiderLeg() {
@@ -30,6 +31,8 @@ public class SpiderLeg {  // this class will take care of HTTPS requests
         try {
             Connection connection = Jsoup.connect(URL).userAgent(USER_AGENT);  // user agent trick the web server that the robot is a normal browser
             Document HTML_Document = connection.get();  //https get request for the document , then parse HTML
+            document = Jsoup.parse((Jsoup.connect(URL).get()).toString());
+
             this.HTML_Document = HTML_Document;
 
 
@@ -55,6 +58,10 @@ public class SpiderLeg {  // this class will take care of HTTPS requests
                     }
 
                 } else {
+
+
+                    //System.out.println(" Duplicate Compact String , will not add links ! ");
+
                     return false;
                 }
             } else {
@@ -110,7 +117,7 @@ public class SpiderLeg {  // this class will take care of HTTPS requests
         if (x) {
             List<String> temp = leg.GetLinks();
             while (!temp.isEmpty()) {
-                System.out.println(temp.remove(0));
+                //System.out.println(temp.remove(0));
             }
 
         }
