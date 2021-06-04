@@ -100,8 +100,8 @@ public class Indexer implements Runnable{
         traverseDOM(webPage.document.body(), "");
         System.out.println(webPage.Title + "  "+ webPage.url +"\n");
 
-        //Main.databaseManager.addDocument(webPage);
-        //Main.databaseManager.addKeywordsInDoc(webPage);
+        Main.databaseManager.addDocument(webPage);
+        Main.databaseManager.addKeywordsInDoc(webPage);
 
         /*for (Map.Entry<String, FieldData> entry : webPage.wordsMap.entrySet()) {
             System.out.println(entry.getKey() + ":" + entry.getValue().count.toString() +"    "+ entry.getValue().score.toString());
