@@ -50,8 +50,8 @@ public class Main {
         crawlerEnd = true;*/
         //////////////////////////////////////////////
         Crawler c = new Crawler();
-        c.PopulatePagesToVisit("seeds.txt");
-        c.Search(c.PagesToVisit.get(0));
+       // CrawlerManager.PopulatePagesToVisit("seeds.txt");
+        c.Search(CrawlerManager.PagesToVisit.get(0));
 
         databaseManager = new DB();
         webPageParseManager.start();

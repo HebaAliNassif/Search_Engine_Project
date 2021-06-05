@@ -9,68 +9,31 @@ import java.util.*;
 public class Crawler implements Runnable {
 
     Crawler() {
-        try {
-            PopulatePagesToVisit("seeds.txt");
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
+
     }
 
 
     private static final int MAX_PAGES_TO_SEARCH = 5000;
-    public Set<String> PagesVisited = new HashSet<String>();
-    public List<String> PagesToVisit = new LinkedList<String>(); //breadth first approach
+    //public Set<String> PagesVisited = new HashSet<String>();
+    //public List<String> PagesToVisit = new LinkedList<String>(); //breadth first approach
 
-   // public void PopulatePagesToVisit(String FileName) {
-     //   BufferedReader reader;
-
-
-
-    public void PopulatePagesToVisit(String FileName) throws FileNotFoundException {
-        Scanner scanner = new Scanner(new File(FileName));
-        String token1 = "";
-        while (scanner.hasNext()) {
-            // find next line
-            token1 = scanner.next();
-            //System.out.println(token1);
-            PagesToVisit.add(token1);
-        }
-        /*BufferedReader reader;
-
-        try {
-            reader = new BufferedReader(new FileReader(FileName));
-            String line = reader.readLine();
-            while (line != null) {
-
-                line = reader.readLine();
-                synchronized (PagesVisited) {
-                    this.PagesToVisit.add(line);
-                }
-
-                this.PagesToVisit.add(line);
-                line = reader.readLine();
-
-            }
-            reader.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }*/
-    }
+    // public void PopulatePagesToVisit(String FileName) {
+    //   BufferedReader reader;
 
 
     public String NextUrl() throws MalformedURLException {
-        String NextUrl = this.PagesToVisit.remove(0);
+        synchronized (CrawlerManager.PagesToVisit) {
+            String NextUrl = CrawlerManager.PagesToVisit.remove(0);
 
-        while (this.PagesVisited.contains(NextUrl)) {
-            NextUrl = this.PagesToVisit.remove(0);
+            while (CrawlerManager.PagesVisited.contains(NextUrl)) {
+                NextUrl = CrawlerManager.PagesToVisit.remove(0);
+            }
+            CrawlerManager.PagesVisited.add(NextUrl);
+
+            //NextUrl = URI.create((new URL(NextUrl)).toString()).normalize().toString();
+
+            return NextUrl;
         }
-        this.PagesVisited.add(NextUrl);
-
-
-
-        NextUrl = URI.create((new URL(NextUrl)).toString()).normalize().toString();
-
-        return NextUrl;
 
     }
 
@@ -78,46 +41,50 @@ public class Crawler implements Runnable {
 
 
         while (true) {
-            synchronized (PagesVisited) {
-                if (this.PagesVisited.size() > MAX_PAGES_TO_SEARCH) {
+            synchronized (CrawlerManager.PagesVisited) {
+                if (CrawlerManager.PagesVisited.size() > MAX_PAGES_TO_SEARCH) {
                     break;
                 }
             }
-            System.out.println("size of pages visited" + this.PagesVisited.size());
-            System.out.println("size of pages to visit" + this.PagesToVisit.size());
+             //System.out.println("size of pages visited" + CrawlerManager.PagesVisited.size());
+             System.out.println("size of pages to visit" + CrawlerManager.PagesToVisit.size());
 
 
-            String CurrentURL;
+            String CurrentURL = new String();
+            boolean NotIsEmpty = false;
             SpiderLeg Leg = new SpiderLeg();
-            synchronized (PagesToVisit) {
-                if (!this.PagesToVisit.isEmpty()) {
-
-                        CurrentURL = this.NextUrl();
-                        //System.out.println(CurrentURL);
-
-                        RobotManager RB = new RobotManager();
-                        boolean isRobotSafe = RB.RobotSafe(CurrentURL);
+            synchronized (CrawlerManager.PagesToVisit) {
+                if (!CrawlerManager.PagesToVisit.isEmpty()) {
+                    NotIsEmpty = true;
+                    CurrentURL = this.NextUrl();
 
 
-            if (isRobotSafe && !(CurrentURL ==null))
-            {
-                Leg.Crawl(CurrentURL);
-                WebPage webPage = new WebPage(CurrentURL, Leg.document);
-                synchronized ( Main.ParserQueue) {
-                    Main.ParserQueue.add(webPage);
                 }
             }
+            if (NotIsEmpty) {
+                RobotManager RB = new RobotManager();
+                boolean isRobotSafe = RB.RobotSafe(CurrentURL);
 
 
-                        this.PagesToVisit.addAll(Leg.GetLinks());
+                if (isRobotSafe && !(CurrentURL == null)) {
+                    Leg.Crawl(CurrentURL);
+                    WebPage webPage = new WebPage(CurrentURL, Leg.document);
+                    synchronized (Main.ParserQueue) {
+                        Main.ParserQueue.add(webPage);
+                    }
+                }
 
+                synchronized (CrawlerManager.PagesToVisit) {
+                CrawlerManager.PagesToVisit.addAll(Leg.GetLinks());
                 }
             }
         }
+
+
     }
 
     public void run() {
-
+        System.out.println(Thread.currentThread().getName());
         try {
             Search("https://www.yahoo.com");
         } catch (IOException e) {

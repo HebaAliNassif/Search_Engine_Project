@@ -14,7 +14,7 @@ import javax.net.ssl.SSLException;
 import java.io.*;
 import java.util.Set;
 
-public class SpiderLeg {  // this class will take care of HTTPS requests
+public class SpiderLeg {  // this class will take care of HTTPS requests and document parsing
 
 
     private List<String> links = new LinkedList<String>(); // list of links
@@ -38,6 +38,7 @@ public class SpiderLeg {  // this class will take care of HTTPS requests
 
             if (connection.response().statusCode() == 200) {
                 System.out.println(" HTTPS request successful at URL = " + URL);
+                System.out.println(Thread.currentThread().getName());
             }
             if (connection.response().statusCode() == 502) {
                 return false;
@@ -94,7 +95,6 @@ public class SpiderLeg {  // this class will take care of HTTPS requests
             if (bodyText.length() < UpperLimit) {
                 UpperLimit = bodyText.length() - 1;
             }
-            System.out.println(" upper limit  " + UpperLimit);
             String CompactString = bodyText.substring(0, UpperLimit);
             if (!CompactStrings.contains(CompactString)) {
                 CompactStrings.add(CompactString);
