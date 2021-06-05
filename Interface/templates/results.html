@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% block head %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/results.css') }}">
+{% endblock head %}
+
+
+{% block content %}
+
+<div class="content">
+<div class="head">
+    your search for "{{ key }}" landed: {{ count }} result(s)<br>
+    
+</div>
+    {% for site in sites %}
+        <div class="result-box">
+            <div class="result-title">
+                <a class="result" href={{ site.url }}>{{ site.title }}</a>
+            </div>
+            <p class="site-url">{{ site.url }}</p>
+            <p class="result-desc">
+                {{ site.before }}  <strong style="background-color:#EE0;">{{ site.key }}</strong> {{ site.after }}
+            </p>
+        </div>
+    {% endfor %}
+
+    <div class="pages">
+    {% if paginate.hasPrevPage %}
+        <a class="next" href="/search?key={{ key }}&page={{ paginate.prevPage }}">Previous Page</a>
+    {% else %}
+        <a class="next link-disabled" href="#">Previous Page</a>
+    {% endif %}
+
+    {% if paginate.hasNextPage %}
+        <a class="prev" href="/search?key={{ key }}&page={{ paginate.nextPage }}">Next Page</a>
+    {% else %}
+        <a class="prev link-disabled" href="#">Next Page</a>
+    {% endif %}
+    </div>
+  
+</div>
+{% endblock content %}
+

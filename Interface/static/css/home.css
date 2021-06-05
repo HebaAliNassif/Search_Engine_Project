@@ -1,0 +1,104 @@
+
+.search{
+    display: flex;
+    background-color: #173F5F;
+    flex-direction: column;
+    flex-shrink: 1;
+    height:calc(100vh - 50px);
+    justify-content: center;
+    align-items: center;
+}
+
+form{
+    /* justify-content: center; */
+    width: 60%;
+    margin-top: 0%;
+    margin-right: auto;
+    margin-left: auto;
+    justify-content: flex-start;
+    align-content: flex-end;
+}
+
+.search-box{
+    display: flex;
+    flex-direction: row;
+    height: 50px;
+    width: 100%;
+    overflow: hidden;
+    background-color: #173F5F;
+}
+.search-text{
+    flex-grow: 9;
+    border-radius: 50px 0px 0px 50px;
+    border-style: none; 
+    padding: 10px 20px;
+    font-size: 14pt;
+}
+
+.search-text:focus{
+    border-style: none;
+    outline: 0;
+}
+
+button[type=submit]{
+    border-style: none;
+    flex-grow: 1;
+    cursor: pointer;
+    border-radius: 0 50px 50px 0;
+}
+
+.suggestions{
+
+    background-color: #20639B;
+    box-sizing: border-box;
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+    border-radius: 20px;
+    height: fit-content;
+}
+
+.suggestions > div{
+    background-color: #20639B;
+    cursor: pointer;
+    padding: 10px;
+    border-bottom: 1px solid #fff;
+    color: white;
+    font-size: 16pt;
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    text-align: center;
+}
+
+.suggestions > div:hover{
+    background-color: antiquewhite;
+    color: #20639B;
+}
+
+.suggest-list{
+    display: none;
+}
+
+.voice-search{
+    position: absolute;
+    margin: 10px auto;
+    width: 100%;
+    text-align: center;
+
+}
+
+.voice-icon{
+    width: 70px;
+    cursor: pointer;
+    margin-top: 20px;
+}
+
+.voice-text{
+    margin-top: 10px;
+    color: white;
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+    letter-spacing: 1px;
+}
+
+.working{
+    color: #3CAEA3;
+}
