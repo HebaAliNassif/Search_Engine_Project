@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block head %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
+    <script type="text/javascript" src="{{ url_for('static', filename='js/speechRecongnition.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/suggestions.js') }}"></script>
+{% endblock head %}
+
+
+{% block content %}
+<div class="voice-search">
+    <img class="voice-icon" src="{{url_for('static', filename="imgs/microphone.png")}}"></img>
+    <div class="voice-text">Press icon to start voice search.</div>
+</div>
+<div class="search">
+    <form action="/search" method="get">
+        <div class="search-box">
+                <input type="text" id="search-text" class="search-text" name="key" placeholder="Enter Search Keyword">
+                <button type="submit"><img class="icon" height="25" src="{{ url_for('static', filename='imgs/search.png') }}"/></button>
+        </div>
+    <div class="suggestions">
+    </div>
+    
+    </form>
+    <div class="suggest-list">{{ s_list }}</div>
+    
+ </div>
+{% endblock content %}

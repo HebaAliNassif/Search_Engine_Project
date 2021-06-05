@@ -1,0 +1,60 @@
+{
+    "results_count": 3,
+    "results": [
+        {
+            "word": "contrib",
+            "sites": [
+                "www.google.com",
+                "<strong>www.facebook.com</strong>",
+                "www.souq.com",
+                "www.google.com",
+                "www.facebook.com",
+                "www.google.com",
+                "www.facebook.com",
+                "www.google.com",
+                "www.facebook.com",
+                "www.google.com",
+                "www.facebook.com",
+                "www.google.com",
+                "www.facebook.com",
+                "www.google.com",
+                "www.facebook.com",
+                "www.google.com",
+                "www.facebook.com",
+                "www.google.com",
+                "www.facebook.com"
+            ],
+            "scores": [
+                0.65,
+                0.25,
+                0.2
+            ]
+        },
+        {
+            "word": "friend",
+            "sites": [
+                "https://www.merriam-webster.com/dictionary/friend",
+                "https://www.imdb.com/title/tt0108778/",
+                "https://www.dictionary.com/browse/friend"
+            ],
+            "scores": [
+                0.65,
+                0.25,
+                0.2
+            ]
+        },
+        {
+            "word": "destabil",
+            "sites": [
+                "https://www.dictionary.com/browse/destabilize",
+                "https://en.wikipedia.org/wiki/Destabilisation",
+                "https://www.thesaurus.com/browse/destabilize"
+            ],
+            "scores": [
+                0.65,
+                0.25,
+                0.2
+            ]
+        }
+    ]
+}

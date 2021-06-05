@@ -1,0 +1,9 @@
+{
+    "sites": [
+        {
+            "name": "www.google.com",
+            "content": "this is the google site",
+            "title": "Google Search "
+        }
+    ]
+}
