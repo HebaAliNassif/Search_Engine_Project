@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+
+<div class="content">
+<div class="head">
+    your search for "{{ key }}" landed: {{ count }} result(s)
+</div>
+    {% for site in sites %}
+        <div class="result-box">
+            <div class="result-title">
+                <a class="result" href="">Lorem ipsum dolor sit amet consectetur, adipisicing elit. Ea.</a>
+            </div>
+            <p class="result-desc">
+            Lorem ipsum dolor sit, amet consectetur adipisicing elit. Eius molestias nemo cumque quas, nobis, quos eveniet sint porro corporis animi, iure est recusandae sed. Earum odio hic expedita! Cupiditate accusamus inventore porro perspiciatis, laborum eos quasi iure vitae aperiam nihil. Illo atque reprehenderit autem excepturi error placeat, molestiae fugiat accusamus.
+            </p>
+        </div>
+    {% endfor %}
+  
+</div>
+{% endblock content %}
+
