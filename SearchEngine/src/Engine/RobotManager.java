@@ -25,13 +25,10 @@ public class RobotManager {
     private static final String USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:88.0) Gecko/20100101 Firefox/88.0";
 
     public URL GetUrlRobotstxt(String URL) throws IOException {
-        String url_temp = new String();
-        if(URL.endsWith("/")) {
-            url_temp = URL + "robots.txt";
-        } else {
-            url_temp = URL + "/robots.txt";
-        }
-        return (new URL(url_temp));
+        URL url_temp = new URL(URL);
+        String FinalURL = new String();
+        FinalURL = url_temp.getProtocol() + "://" + url_temp.getHost() + "/robots.txt" ;
+        return (new URL(FinalURL));
     }
 
     public boolean RobotSafe(String URL) throws IOException {
@@ -41,12 +38,17 @@ public class RobotManager {
             /*if(!URL.contains("https://"))
             URL= "https://" + URL ;*/
             UrlToCheck = new URL(URL);
+
+            //.println(" url to check " + UrlToCheck);
+
             //System.out.println(" url to check " + UrlToCheck);
+
             String protocol = UrlToCheck.getProtocol();
             if (!protocol.equals("http") && !protocol.equals("https")) {
                 return false;
             }
             RobotURL = GetUrlRobotstxt(URL);
+           // System.out.println(RobotURL);
        /* } catch (MalformedURLException e) {
             System.out.println(" Invalid Robot URL ");
         }*/
@@ -79,6 +81,7 @@ public class RobotManager {
             }
         } catch (MalformedURLException e) {
             System.out.println(" Invalid Robot URL ");
+            return false;
         }
 
 
@@ -122,8 +125,9 @@ public class RobotManager {
             } else if (splited[0].equals("Allow:")) {
                 allowed.add(splited[1]);
             }
-        } catch(ArrayIndexOutOfBoundsException e) {
+        } catch(ArrayIndexOutOfBoundsException  e) {
             System.out.println(" error in robots file line , resuming... ");
+
         }
 
         }
@@ -134,8 +138,9 @@ public class RobotManager {
         Disallowed.put(RobotURL.getProtocol() + "://" + RobotURL.getHost(), disallowed);
         allowed = null;
         disallowed = null;
-        } catch(FileNotFoundException e) {
+        } catch(IOException e) {
             System.out.println(" File Not found , resuming... ");
+            return false;
         }
         return true;
     }

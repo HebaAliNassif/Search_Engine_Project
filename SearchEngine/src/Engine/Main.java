@@ -51,7 +51,7 @@ public class Main {
         //////////////////////////////////////////////
         Crawler c = new Crawler();
         c.PopulatePagesToVisit("seeds.txt");
-        c.Search(Crawler.PagesToVisit.get(0));
+        c.Search(c.PagesToVisit.get(0));
 
         databaseManager = new DB();
         webPageParseManager.start();

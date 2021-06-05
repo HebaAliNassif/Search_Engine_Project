@@ -13,6 +13,7 @@ import java.util.*;
 public class Indexer implements Runnable{
     final private static float spamPercentage = (float) 0.4;
     WebPage webPage;
+
     public static final String DEFAULT_PAGE_TITLE = "default title";
 
     public Indexer(WebPage webPage) {
