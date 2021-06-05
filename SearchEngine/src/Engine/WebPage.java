@@ -1,5 +1,6 @@
 package Engine;
 
+import org.bson.types.ObjectId;
 import org.jsoup.nodes.Document;
 
 import java.util.HashMap;
@@ -23,7 +24,8 @@ class FieldData {
 
 public class WebPage {
 
-    public String Title;
+    //Web page id
+    public ObjectId id = null;
     //Web page url
     public String url = null;
     //Web page html document

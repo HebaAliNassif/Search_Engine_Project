@@ -1,6 +1,7 @@
 package Engine;
 
 
+import crawlercommons.robots.*;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -38,11 +39,7 @@ public class RobotManager {
             /*if(!URL.contains("https://"))
             URL= "https://" + URL ;*/
             UrlToCheck = new URL(URL);
-
             //.println(" url to check " + UrlToCheck);
-
-            //System.out.println(" url to check " + UrlToCheck);
-
             String protocol = UrlToCheck.getProtocol();
             if (!protocol.equals("http") && !protocol.equals("https")) {
                 return false;
