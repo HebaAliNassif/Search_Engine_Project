@@ -1,6 +1,5 @@
 package Engine;
 
-import java.net.UnknownHostException;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -10,7 +9,6 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import javax.net.ssl.SSLException;
 import java.io.*;
 import java.util.Set;
 
@@ -36,27 +34,20 @@ public class SpiderLeg {  // this class will take care of HTTPS requests
             if (connection.response().statusCode() == 200) {
                 System.out.println(" HTTPS request successful at URL = " + URL);
             }
-            if (connection.response().statusCode() == 502) {
-                return false;
-            }
-            if (connection.response().contentType() != null) {
-                if (connection.response().contentType().contains("text/html")) {
-                    boolean NotDuplicate = this.InsertCompactString();
+            if (connection.response().contentType().contains("text/html")) {
+                boolean NotDuplicate = this.InsertCompactString();
 
-                    if (NotDuplicate) {
-                        Elements LinksOnPage = this.HTML_Document.select("a[href]");
-                        for (Element E : LinksOnPage) {
-                            this.links.add(E.absUrl("href"));
-                        }
-                        return true;
-                    } else {
-                        System.out.println(" Duplicate Compact String , will not add links ! ");
-                        return false;
+                if (NotDuplicate) {
+                    Elements LinksOnPage = this.HTML_Document.select("a[href]");
+                    for (Element E : LinksOnPage) {
+                        this.links.add(E.absUrl("href"));
                     }
-
+                    return true;
                 } else {
+                    System.out.println(" Duplicate Compact String , will not add links ! ");
                     return false;
                 }
+
             } else {
                 return false;
             }
@@ -65,14 +56,6 @@ public class SpiderLeg {  // this class will take care of HTTPS requests
             return false;
         } catch (HttpStatusException e) {
             System.out.println(" Error in Fetching URL ");
-            return false;
-        } catch (UnknownHostException e) {
-            System.out.println(" Unknown Host ");
-            return false;
-        } catch (SSLException e) {
-            System.out.println(" SSL exception , connection reset ");
-            return false;
-        } catch (IOException e) {
             return false;
         }
     }
@@ -84,10 +67,9 @@ public class SpiderLeg {  // this class will take care of HTTPS requests
             return false;
         } else {
             int UpperLimit = 50;
-            if (bodyText.length() < UpperLimit) {
+            if (bodyText.length() > UpperLimit) {
                 UpperLimit = bodyText.length() - 1;
             }
-            System.out.println(" upper limit  " + UpperLimit);
             String CompactString = bodyText.substring(0, UpperLimit);
             if (!CompactStrings.contains(CompactString)) {
                 CompactStrings.add(CompactString);
