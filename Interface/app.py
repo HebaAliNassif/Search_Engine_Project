@@ -8,6 +8,7 @@ app = Flask(__name__)
 paginate = Pagination
 data = None
 isProcessing = False
+search_key = ""
 
 
 @app.route("/")
@@ -15,7 +16,6 @@ def home_page():
     global isProcessing
     isProcessing = False
     s_list = read_suggestions()
-    print(s_list)
     return render_template("home.html", s_list=s_list)
 
 
@@ -37,7 +37,8 @@ def chart_page():
 def search_page():
     key = request.args.get('key', type=str)
     page = request.args.get('page', type=int, default=1)
-    print(page)
+    match = request.args.get('match-search', type=str, default="off")
+    match_search = True if match == "on" else False
     # add to suggestion list
     write_suggestion(key)
 
@@ -48,9 +49,11 @@ def search_page():
     # Process the query Get the records
     global data
     global isProcessing
-    if(not isProcessing):
-        data = process_query(stem)
-    isProcessing = True
+    global search_key
+    if(not isProcessing or search_key != key):
+        data = process_query(key, stem, match_search)
+        search_key = key
+        isProcessing = True
 
     # Paginate
     paginate = Pagination(data).getwebs(page)

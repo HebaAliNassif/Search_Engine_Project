@@ -2,6 +2,9 @@
 
 {% block head %}
     <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
+    <link href="{{ url_for('static', filename='css/clean-switch.css') }}" rel="stylesheet">
+    
+    
     <script type="text/javascript" src="{{ url_for('static', filename='js/speechRecongnition.js') }}"></script>
     <script type="text/javascript" src="{{ url_for('static', filename='js/suggestions.js') }}"></script>
 {% endblock head %}
@@ -12,12 +15,20 @@
     <img class="voice-icon" src="{{url_for('static', filename="imgs/microphone.png")}}"></img>
     <div class="voice-text">Press icon to start voice search.</div>
 </div>
+
 <div class="search">
+    
     <form action="/search" method="get">
+        <label class="cl-switch cl-switch-large">
+            <input type="checkbox" name="match-search">
+            <span class="switcher"></span>
+            <span class="label">Enable Match Search</span>
+        </label>
         <div class="search-box">
                 <input type="text" id="search-text" class="search-text" name="key" placeholder="Enter Search Keyword">
                 <button type="submit"><img class="icon" height="25" src="{{ url_for('static', filename='imgs/search.png') }}"/></button>
         </div>
+        
     <div class="suggestions">
     </div>
     

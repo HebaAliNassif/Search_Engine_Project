@@ -1,9 +1,10 @@
+from genericpath import exists
 from settings import DB_DRIVER
 from nltk import tokenize
 from nltk.stem import PorterStemmer, LancasterStemmer, snowball
 from nltk.tokenize import word_tokenize
 from settings import db_cursor
-import pyodbc
+import re
 import json
 
 
@@ -79,10 +80,10 @@ def write_suggestion(key):
 # db_cursor.execute(
 #     "select * from INFORMATION_SCHEMA.COLUMNS where TABLE_NAME='DocumentsTable'")
 # row = db_cursor.fetchall()  # key, url, freq, score
-def process_query(key):
+def process_query(key, stem, match_search=False):
     # 1- get websites of the key word.
     db_cursor.execute(
-        f"Select doc_url from KeywordsInDocTable where keyword = '{key}' ORDER BY score DESC, term_freq DESC")
+        f"Select doc_url from KeywordsInDocTable where keyword = '{stem}' ORDER BY score DESC, term_freq DESC")
     web_urls = db_cursor.fetchall()  # "URLS"
 
     # 2- store website, desc, title
@@ -96,18 +97,30 @@ def process_query(key):
             desc, title = db_cursor.fetchone()
 
             if(desc):
-                before, after, key = refactor_desc(desc, key)
-                urls.append({"url": url, "before": before,
-                            "after": after, "key": key, "title": title})
+                if match_search:
+                    before, after, key, exists = refactor_test(desc, key)
+                else:
+                    before, after, key, exists = refactor_desc(desc, stem)
+
+                if(exists):
+                    urls.append({"url": url, "before": before,
+                                "after": after, "key": key, "title": title})
     return urls
 
 
-def getRecordsCount():
-    db_cursor.execute("SELECT * FROM KeywordsInDocTable")
-    row = db_cursor.fetchone()
-    print(row)
-    row = db_cursor.fetchone()
-    print(row)
+def refactor_test(desc, key):
+    pattern = f"(.*)({key})(\W.*)"
+    res = re.search(pattern, desc, re.DOTALL)
+    before = ""
+    after = ""
+    exists = False
+    if(res):
+        before, key, after = res.groups()
+        exists = True
+        before = before[len(before)-50:len(before)
+                        ] if len(before) > 50 else before
+        after = after[0:50] if len(after) > 50 else after
+    return before, after, key, exists
 
 
 def refactor_desc(desc, key):
@@ -128,7 +141,15 @@ def refactor_desc(desc, key):
         start = idx - lenth
     before = desc[start:idx]
     after = desc[idx+key_len:end]
-    return before, after, key
+    return before, after, key, True
+
+
+def getRecordsCount():
+    db_cursor.execute("SELECT * FROM KeywordsInDocTable")
+    row = db_cursor.fetchone()
+    print(row)
+    row = db_cursor.fetchone()
+    print(row)
 
 
 def getResults(key):
