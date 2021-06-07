@@ -2,9 +2,7 @@ package Engine;
 
 import java.io.*;
 import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URL;
-import java.util.*;
+
 
 public class Crawler implements Runnable {
 
@@ -13,7 +11,8 @@ public class Crawler implements Runnable {
     }
 
 
-    private static final int MAX_PAGES_TO_SEARCH = 5000;
+    private static final int MAX_PAGES_TO_SEARCH = 50;
+   
     //public Set<String> PagesVisited = new HashSet<String>();
     //public List<String> PagesToVisit = new LinkedList<String>(); //breadth first approach
 
@@ -24,11 +23,24 @@ public class Crawler implements Runnable {
     public String NextUrl() throws MalformedURLException {
         synchronized (CrawlerManager.PagesToVisit) {
             String NextUrl = CrawlerManager.PagesToVisit.remove(0);
-
+            
             while (CrawlerManager.PagesVisited.contains(NextUrl)) {
                 NextUrl = CrawlerManager.PagesToVisit.remove(0);
+                CrawlerManager.actual_idx++;
             }
             CrawlerManager.PagesVisited.add(NextUrl);
+           
+            System.out.println("Updating Stat...");
+            try {
+	            FileWriter myWriter = new FileWriter(CrawlerManager.FILE_STAT);
+	            myWriter.write(Integer.toString(CrawlerManager.numVisited) + "\n");
+	            myWriter.write(Integer.toString(CrawlerManager.actual_idx));
+	            myWriter.close();
+            }
+            catch (IOException e) {
+				System.out.println("couldn't Update STAT File!!!");
+			}
+            System.out.println("\nnum Visited: " + CrawlerManager.numVisited);
 
             //NextUrl = URI.create((new URL(NextUrl)).toString()).normalize().toString();
 
@@ -42,14 +54,10 @@ public class Crawler implements Runnable {
 
         while (true) {
             synchronized (CrawlerManager.PagesVisited) {
-                if (CrawlerManager.PagesVisited.size() > MAX_PAGES_TO_SEARCH) {
-                    Main.crawlerEnd = true;
+                if (CrawlerManager.numVisited >= MAX_PAGES_TO_SEARCH) {
                     break;
                 }
             }
-             //System.out.println("size of pages visited" + CrawlerManager.PagesVisited.size());
-             System.out.println("size of pages to visit" + CrawlerManager.PagesToVisit.size());
-
 
             String CurrentURL = new String();
             boolean NotIsEmpty = false;
@@ -58,8 +66,6 @@ public class Crawler implements Runnable {
                 if (!CrawlerManager.PagesToVisit.isEmpty()) {
                     NotIsEmpty = true;
                     CurrentURL = this.NextUrl();
-
-
                 }
             }
             if (NotIsEmpty) {
@@ -69,19 +75,29 @@ public class Crawler implements Runnable {
 
                 if (isRobotSafe && !(CurrentURL == null)) {
                     Leg.Crawl(CurrentURL);
-                    WebPage webPage = new WebPage(CurrentURL, Leg.HTML_Document);
+                    WebPage webPage = new WebPage(CurrentURL, Leg.document);
+                    
+                    CrawlerManager.pagesWriter.write(CurrentURL+"\n");
+                    CrawlerManager.actual_idx++;
+                    CrawlerManager.numVisited++;
                     synchronized (Main.ParserQueue) {
                         Main.ParserQueue.add(webPage);
                     }
                 }
 
                 synchronized (CrawlerManager.PagesToVisit) {
-                CrawlerManager.PagesToVisit.addAll(Leg.GetLinks());
+                	// Add only of PagesToVist.length < MAX_PAGES 
+                	if(CrawlerManager.numVisited < Crawler.MAX_PAGES_TO_SEARCH) {
+                		CrawlerManager.PagesToVisit.addAll(Leg.GetLinks());
+	                	for(String link: Leg.GetLinks()) {
+	                		CrawlerManager.pagesWriter.write(link+"\n");
+	                	}
+                	}
+                	else
+                		System.out.println("Insertion Denied, Visited has Reached Max");
                 }
             }
         }
-
-
     }
 
     public void run() {
@@ -94,17 +110,21 @@ public class Crawler implements Runnable {
 
     }
 
-
     public static void main(String[] args) throws IOException, MalformedURLException {
-        Crawler c = new Crawler();
+//        Crawler c = new Crawler();
+    	System.out.println("Main Start");
         try {
             CrawlerManager CW = new CrawlerManager();
             Thread Crawler = new Thread(CW);
             Crawler.start();
             Crawler.join();
+            // Set the stat File to 0
         } catch (InterruptedException e) {
 
         }
+        // Write 0 to stat when done
+        
+        
         //c.PopulatePagesToVisit("seeds.txt");
         //c.Search("https://www.yahoo.com");
         /*Iterator it = c.PagesVisited.iterator();
