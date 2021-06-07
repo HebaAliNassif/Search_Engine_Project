@@ -43,6 +43,7 @@ public class Crawler implements Runnable {
         while (true) {
             synchronized (CrawlerManager.PagesVisited) {
                 if (CrawlerManager.PagesVisited.size() > MAX_PAGES_TO_SEARCH) {
+                    Main.crawlerEnd = true;
                     break;
                 }
             }
@@ -68,7 +69,7 @@ public class Crawler implements Runnable {
 
                 if (isRobotSafe && !(CurrentURL == null)) {
                     Leg.Crawl(CurrentURL);
-                    WebPage webPage = new WebPage(CurrentURL, Leg.document);
+                    WebPage webPage = new WebPage(CurrentURL, Leg.HTML_Document);
                     synchronized (Main.ParserQueue) {
                         Main.ParserQueue.add(webPage);
                     }

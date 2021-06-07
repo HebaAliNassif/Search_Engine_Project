@@ -99,7 +99,8 @@ public class Indexer implements Runnable{
             webPage.Title = Utilities.processString(title);
 
         traverseDOM(webPage.document.body(), "");
-        System.out.println(webPage.Title + "  "+ webPage.url +"\n");
+        IndexerManager.indexedPagesCount++;
+        System.out.println(IndexerManager.indexedPagesCount + "  " + webPage.Title + "  " + webPage.url);
 
         Main.databaseManager.addDocument(webPage);
         Main.databaseManager.addKeywordsInDoc(webPage);

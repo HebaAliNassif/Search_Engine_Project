@@ -28,6 +28,8 @@ public class Main {
         Thread indexerManager = new Thread(new IndexerManager());
         indexerManager.setName("IndexerManager");
 
+        Thread crawlerManager = new Thread( new CrawlerManager());
+        crawlerManager.setName("CrawlerManager");
         //////////////////////////////////////////////
         //Only for testing the indexer
         /*Scanner scanner = new Scanner(new File("links.txt"));
@@ -49,17 +51,16 @@ public class Main {
         }
         crawlerEnd = true;*/
         //////////////////////////////////////////////
-        Crawler c = new Crawler();
-       // CrawlerManager.PopulatePagesToVisit("seeds.txt");
-        c.Search(CrawlerManager.PagesToVisit.get(0));
+
+
+
 
         databaseManager = new DB();
+        crawlerManager.start();
         webPageParseManager.start();
         indexerManager.start();
 
-        QueryProcessor Q = new QueryProcessor();
-        Q.Process("Troy Egypt");
-
+        crawlerManager.join();
         webPageParseManager.join();
         indexerManager.join();
 

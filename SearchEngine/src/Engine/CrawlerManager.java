@@ -62,7 +62,7 @@ public class CrawlerManager implements Runnable {
     @Override
     public void run() {
         Thread.currentThread().setName("CrawlerManager");
-        //System.out.println("Enter the number of crawler threads: ");
+        System.out.println("Enter the number of crawler threads: ");
         try {
             nThreads = Integer.parseInt(reader.readLine());
         } catch (IOException e) {

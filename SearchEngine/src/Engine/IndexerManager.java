@@ -1,6 +1,7 @@
 package Engine;
 
 public class IndexerManager implements Runnable{
+    public static int indexedPagesCount = 0;
     @Override
     public void run() {
         while(true)

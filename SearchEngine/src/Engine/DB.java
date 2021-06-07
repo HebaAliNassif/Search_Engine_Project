@@ -23,6 +23,7 @@ public class DB {
             stmt2 = connection.createStatement();
             stmt3 = connection.createStatement();
             if (connection != null) {
+                System.out.println("Connected");
                 DatabaseMetaData dm = (DatabaseMetaData) connection.getMetaData();
                 System.out.println("Connecting to Database");
                 System.out.println("Driver name: " + dm.getDriverName());
@@ -32,6 +33,7 @@ public class DB {
             }
 
         } catch (SQLException ex) {
+            System.out.println("Not Connected");
             ex.printStackTrace();
         } finally {
 
