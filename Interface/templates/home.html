@@ -19,11 +19,18 @@
 <div class="search">
     
     <form action="/search" method="get">
-        <label class="cl-switch cl-switch-large">
-            <input type="checkbox" name="match-search">
-            <span class="switcher"></span>
-            <span class="label">Enable Match Search</span>
-        </label>
+        <div class="search-options">
+            <label class="cl-switch cl-switch-large">
+                <input type="checkbox" name="match-search">
+                <span class="switcher"></span>
+                <span class="label">Enable Match Search</span>
+            </label>
+            <label class="cl-switch cl-switch-large">
+                <input type="checkbox" name="thread-search">
+                <span class="switcher"></span>
+                <span class="label">Enable MultiThreading</span>
+            </label>
+        </div>
         <div class="search-box">
                 <input type="text" id="search-text" class="search-text" name="key" placeholder="Enter Search Keyword">
                 <button type="submit"><img class="icon" height="25" src="{{ url_for('static', filename='imgs/search.png') }}"/></button>

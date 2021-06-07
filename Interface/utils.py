@@ -73,8 +73,7 @@ def write_suggestion(key):
     with open("static/assets/file.txt", 'r+') as f:
         content = f.read()
         if(key not in content):
-            f.seek(0, 0)
-            f.write(key.rstrip('\r\n') + '\n' + content)
+            f.write('\n' + key)
 
 
 # db_cursor.execute(
@@ -88,7 +87,7 @@ def process_query(key, stem, match_search=False):
 
     # 2- store website, desc, title
     urls = []
-    websites = []
+    pattern = re.compile(f"(.*)({key})(\W.*)", re.DOTALL)
     for web in web_urls:
         if web[0] not in urls:
             url = web[0]
@@ -98,19 +97,20 @@ def process_query(key, stem, match_search=False):
 
             if(desc):
                 if match_search:
-                    before, after, key, exists = refactor_test(desc, key)
+                    print("Enter Match Search")
+                    before, after, key, exists = refactor_test(
+                        desc, key, pattern)
                 else:
                     before, after, key, exists = refactor_desc(desc, stem)
 
                 if(exists):
                     urls.append({"url": url, "before": before,
-                                "after": after, "key": key, "title": title})
+                                 "after": after, "key": key, "title": title})
     return urls
 
 
-def refactor_test(desc, key):
-    pattern = f"(.*)({key})(\W.*)"
-    res = re.search(pattern, desc, re.DOTALL)
+def refactor_test(desc, key, pattern):
+    res = re.search(pattern, desc)
     before = ""
     after = ""
     exists = False

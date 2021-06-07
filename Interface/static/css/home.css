@@ -50,7 +50,10 @@ form{
 .search-type{
     width: 10px;
 }
-
+.search-options{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}
 
 button[type=submit]{
     border-style: none;

@@ -2,7 +2,7 @@ from flask import Flask, url_for, request
 from flask.templating import render_template
 from settings import db_cursor
 from utils import WordProcess, Pagination, read_suggestions, write_suggestion, process_query
-
+from WordThreading import ProcssThreading
 app = Flask(__name__)
 
 paginate = Pagination
@@ -35,10 +35,13 @@ def chart_page():
 
 @app.route("/search")
 def search_page():
-    key = request.args.get('key', type=str)
+    key = request.args.get('key', type=str).lower()
     page = request.args.get('page', type=int, default=1)
     match = request.args.get('match-search', type=str, default="off")
-    match_search = True if match == "on" else False
+    thread_search = request.args.get('thread-search', type=str, default="off")
+
+    is_match = True if match == "on" else False
+    is_thread = True if thread_search == "on" else False
     # add to suggestion list
     write_suggestion(key)
 
@@ -51,7 +54,9 @@ def search_page():
     global isProcessing
     global search_key
     if(not isProcessing or search_key != key):
-        data = process_query(key, stem, match_search)
+        p = ProcssThreading(stem, key, is_thread=is_thread,
+                            is_match=is_match)
+        data = p.get_results()
         search_key = key
         isProcessing = True
 
