@@ -1,9 +1,9 @@
 # Search_Engine_Project
 
 **Running the indexer and crawler**
-- Fill in the seeds.txt file with the desired initial links.
-- Run the Main.java (SearchEngine/src/Engine/Main.java) to start the process.
-- To change the DB connection, go to the Constants.java(SearchEngine/src/Engine/Constants.java) file and change the password and username.
+- fill in the seeds.txt file with the desired initial links
+- run the Main.java (SearchEngine/src/Engine/Main.java) to start the process
+- to change the DB connection, go to the Constants.java(SearchEngine/src/Engine/Constants.java) file and change the password and username
 
 
 **How to run the interface**
