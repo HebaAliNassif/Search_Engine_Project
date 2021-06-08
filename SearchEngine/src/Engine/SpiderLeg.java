@@ -50,7 +50,9 @@ public class SpiderLeg {  // this class will take care of HTTPS requests and doc
                     if (NotDuplicate) {
                         Elements LinksOnPage = this.HTML_Document.select("a[href]");
                         for (Element E : LinksOnPage) {
-                            this.links.add(E.absUrl("href"));
+                            if (!isHashURL(E.absUrl("href"))) {
+                                this.links.add(E.absUrl("href"));
+                            }
                         }
                         return true;
                     } else {
@@ -122,6 +124,12 @@ public class SpiderLeg {  // this class will take care of HTTPS requests and doc
 
         }
 
+    }
+    boolean isHashURL(String theURL) {
+        if (theURL.indexOf("?") > 0 || theURL.indexOf("#") > 0) {
+            return true;
+        }
+        return false;
     }
 
 

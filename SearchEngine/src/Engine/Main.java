@@ -30,30 +30,6 @@ public class Main {
 
         Thread crawlerManager = new Thread( new CrawlerManager());
         crawlerManager.setName("CrawlerManager");
-        //////////////////////////////////////////////
-        //Only for testing the indexer
-        /*Scanner scanner = new Scanner(new File("links.txt"));
-        List<String> links = new ArrayList<String>();
-        String token1 = "";
-        while (scanner.hasNext()) {
-            // find next line
-            token1 = scanner.next();
-            links.add(token1);
-        }
-        scanner.close();
-        String urlString = "";
-        for (int i = 0; i < links.size(); i++) {
-            urlString = links.get(i);
-            String url = URI.create((new URL(urlString)).toString()).normalize().toString();
-            Document doc = Jsoup.parse((Jsoup.connect(urlString).get()).toString());
-            WebPage webPage = new WebPage(url, doc);
-            ParserQueue.add(webPage);
-        }
-        crawlerEnd = true;*/
-        //////////////////////////////////////////////
-
-
-
 
         databaseManager = new DB();
         crawlerManager.start();
