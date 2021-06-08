@@ -76,13 +76,16 @@ public class Crawler implements Runnable {
 
                 if (isRobotSafe && !(CurrentURL == null)) {
                     Leg.Crawl(CurrentURL);
-                    WebPage webPage = new WebPage(CurrentURL, Leg.HTML_Document);
+                    if (Leg.HTML_Document != null) {
+                        WebPage webPage = new WebPage(CurrentURL, Leg.HTML_Document);
 
-                    CrawlerManager.pagesWriter.write(CurrentURL+"\n");
-                    CrawlerManager.actual_idx++;
-                    CrawlerManager.numVisited++;
-                    synchronized (Main.ParserQueue) {
-                        Main.ParserQueue.add(webPage);
+                        CrawlerManager.pagesWriter.write(CurrentURL + "\n");
+                        CrawlerManager.actual_idx++;
+                        CrawlerManager.numVisited++;
+
+                        synchronized (Main.ParserQueue) {
+                            Main.ParserQueue.add(webPage);
+                        }
                     }
                 }
 

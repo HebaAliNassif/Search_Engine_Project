@@ -32,7 +32,6 @@ public class SpiderLeg {  // this class will take care of HTTPS requests and doc
             Connection connection = Jsoup.connect(URL).userAgent(USER_AGENT);  // user agent trick the web server that the robot is a normal browser
             Document HTML_Document = connection.get();  //https get request for the document , then parse HTML
             document = Jsoup.parse((Jsoup.connect(URL).get()).toString());
-
             this.HTML_Document = HTML_Document;
 
 
