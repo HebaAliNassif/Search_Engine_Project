@@ -11,7 +11,7 @@ public class Crawler implements Runnable {
     }
 
 
-    private static final int MAX_PAGES_TO_SEARCH = 50;
+    private static final int MAX_PAGES_TO_SEARCH = 5000;
 
     //public Set<String> PagesVisited = new HashSet<String>();
     //public List<String> PagesToVisit = new LinkedList<String>(); //breadth first approach
@@ -76,7 +76,7 @@ public class Crawler implements Runnable {
 
                 if (isRobotSafe && !(CurrentURL == null)) {
                     Leg.Crawl(CurrentURL);
-                    WebPage webPage = new WebPage(CurrentURL, Leg.document);
+                    WebPage webPage = new WebPage(CurrentURL, Leg.HTML_Document);
 
                     CrawlerManager.pagesWriter.write(CurrentURL+"\n");
                     CrawlerManager.actual_idx++;
