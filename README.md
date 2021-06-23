@@ -1,5 +1,7 @@
 # Search_Engine_Project
 
+A simple Crawler-based search engine that demonstrates the main features of a search engine (web crawling, indexing) and the interaction between them.
+
 **Running the indexer and crawler**
 - fill in the seeds.txt file with the desired initial links
 - run the Main.java (SearchEngine/src/Engine/Main.java) to start the process
